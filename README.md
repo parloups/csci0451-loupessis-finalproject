@@ -3,7 +3,7 @@ Parker Loupessis' Machine Learning Final Project
 
 ## Project Proposal
 ### Group Members
-
+Parker Loupessis
 ### Abstract
 
 ### Motivation and Question
