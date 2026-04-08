@@ -1,2 +1,2 @@
 # csci0451-finalproject
-Parker Loupessis' Machine Learning final project 
+Parker Loupessis' Machine Learning Final Project 
