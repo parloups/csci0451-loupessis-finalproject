@@ -15,6 +15,7 @@ Important columns (gameId, playId, playDescription, nflId, PositionAbbr, x, y, a
 
 ### Planned Deliverables
 We plan to create a Python package that contains all of the code for the model(s) that aim to accurately classify the route that a WR ran on each play, with only the x, y coordinates as the parameters. The first model will use route labels in, out, and go, and use the entirety of the play. Consecutive models will add more labels (e.g., slant, curl, corner, etc) and/or use only the first only couple of seconds of the play. We also plan to create a Jupyter notebook illustrating the use of the package to analyze data for each model.
+
 Full success will mean the creation of multiple models, as outlined above, that can take a sequence of the x, y coordinates of a WR on a single play and label the route they ran. While high accuracy would be ideal, it is more important that the model can perform the desired actions with the planned inputs. Partial success would mean having to change the model design to predict the WR’s x, y coordinates (not labels) at the next defined time step with the previous x, y coordinates as the parameters.
 
 ### Resources Required
@@ -31,4 +32,5 @@ If our project were successful and deployed, it would show that we could use ML 
 
 ### Tentative Timeline
 Two-week goal: have the data prepped and ready. Filter the data we plan to actually use and create all of the targets.
+
 Four-week goal: build and implement the models. Have a notebook demonstrating the use of the models.
