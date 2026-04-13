@@ -1,4 +1,4 @@
-#csci0451-loupessis-finalproject
+# csci0451-loupessis-finalproject
 Parker Loupessis’ Machine Learning Final Project
 
 ##Project Proposal
