@@ -18,12 +18,18 @@ We plan to create a python package that contains all of the code for the model(s
 Full success will mean the creation of mutiple models, as outlined above, that can take a sequence of the x, y coordinates of a WR on a single play and label the route they ran. While high accuracy would be ideal, it is more important that the model can perform the desired actions with the planned inputs. Partial success would mean having to change the model design to predict the WR's x, y coordinates (not labels) at the next defined time step with the previous x, y coordinates as the parameters. 
 
 ### Resources Required
-
+For this project we will be using the 20__ NFL Big Data Bowl dataset. The available dataset contains the x, y coordinates from one game (___) of each player for each play. We will filter it to only look at recievers on passing plays. We will create the targets by watching the the game film (NFL Plus hopefully) and creating the labels for each route ran.  
 
 ### What You Will Learn
+Through this project I am taking my first stab at using ML to solve a problem reltaing to football. As I hope to work in the football sphere in the future, I hope to learn crucial lessons about how I can use ML to support myself as well as others. One of the biggest things I expect to learn is how to work with large, messy(ish) datasets that will require a lot of data prepping to achieve the goal. I also anticipate that creating my own targets might be difficult, but I imagine that it is something I am going to have to do a lot of if I intend to work in football. 
 
 ### Risk Statement
+One thing that could prevent us from achieving the full deliverable is the formulation of the labels. I expect this to be rather time consuming, and, depending on if we can access the game film or the broadcast footage, rather difficult. If no film or footage can be found, we can make a plot of each route and try to label from that, but this would be the least reliable way of creating the targets. Another thing that could prevent us from achieving the full deliverable is if the model struggles as we add more target labels. There might be too little difference between some of the different routes for the model to distinguish and that could hurt overall performance. 
 
 ### Ethics Statement
+If our project was successful and deployed, it would show that we could use ML to automate (at least some of) the process of breaking down football film. This would help coaches, scouts, and assistants a lot as breaking down a game is time consuming (and most don't find it that fun). Anyone working in the football sphere has the potential to benefit from this because they could spend more time actually analyizing the film and the stats, not just prepping to do so. Some of these same people could also be harmed by it as I could mean less of a demand for lower rank coaches, scouts, or assistants. Then, if fewer are needed, it makes it harder for someone to break into the field and work thier way up the ranks. The world will probably be about the same after this project because it will only effect/help a relatively small subset of people and while it will likely help the jobs of some, it might also keep others from getting jobs. 
 
 ### Tentative Timeline
+Two week goal - have the data prepped and ready. Filter to the data we plan to actually use and create all of the targets. 
+
+Four week goal - build and implement the models. Have a notebook demonstrating the use of the models. 
