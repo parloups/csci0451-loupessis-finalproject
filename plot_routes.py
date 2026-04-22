@@ -4,10 +4,10 @@ Plotting/Animating the cleaned routes
 """
 import matplotlib.pyplot as plt
 from matplotlib import animation
-from clean_data import track_WR_clean_df
+from cleaning_data import track_WR_clean_df
 
 # Pick a play
-play_id = track_WR_clean_df["playId"].unique()[29] # change number to change play
+play_id = track_WR_clean_df["playId"].unique()[11] # change number to change play
 play = track_WR_clean_df[(track_WR_clean_df["playId"] == play_id)]
 
 # Sort by frame
