@@ -1,5 +1,5 @@
 """
-Parker Loupessis Final Project Update 1
+Parker Loupessis Final Project
 Cleaning data so labels can be added
 """
 
@@ -35,6 +35,11 @@ track_WR = track_WR[track_WR["isSTPlay"] == False]
 track_WR = track_WR[~track_WR["PassResult"].isna()]
 track_WR = track_WR[track_WR["PassResult"] != "R"]
 
+# remove shovel passes
+shovel_event = track_WR[track_WR["event"] == "pass_shovel"]
+shovel_plays = shovel_event["playId"].unique()
+track_WR = track_WR[~track_WR["playId"].isin(shovel_plays)]
+
 # take only the route (from the snap to pass arrives or QB is sacked)
 track_WR_clean = []
 
@@ -57,4 +62,18 @@ for play in track_WR["playId"].unique():
 
 track_WR_clean_df = pd.concat(track_WR_clean).reset_index(drop=True)
 
-track_WR_clean_df.head()
+# Get the snap location from the football's (x,y) before the snap
+football = tracking[tracking["displayName"] == "football"]
+snap_xy = []
+for snap in football["playId"].unique():
+  x_snap = football[football["playId"] == snap]["x"].iloc[0].item()
+  y_snap = football[football["playId"] == snap]["y"].iloc[0].item()
+  snap_xy.append((x_snap, y_snap, snap.item()))
+
+snap_xy_df = pd.DataFrame(snap_xy, columns=['snap_x', 'snap_y', 'playId'])
+
+# Add snap location to WR df
+track_WR_clean_df = track_WR_clean_df.merge(snap_xy_df, on="playId", how ="left")
+
+# Save df as csv
+track_WR_clean_df.to_csv('track_WR_clean.csv', index=False)

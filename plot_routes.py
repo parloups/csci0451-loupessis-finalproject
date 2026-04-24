@@ -1,13 +1,16 @@
 """
-Parker Loupessis Final Project Update 1
+Parker Loupessis Final Project
 Plotting/Animating the cleaned routes
 """
 import matplotlib.pyplot as plt
 from matplotlib import animation
-from cleaning_data import track_WR_clean_df
+import pandas as pd
+# from cleaning_data import track_WR_clean_df
+
+track_WR_clean_df = pd.read_csv("track_WR_clean.csv")
 
 # Pick a play
-play_id = track_WR_clean_df["playId"].unique()[11] # change number to change play
+play_id = track_WR_clean_df["playId"].unique()[51] # change number to change play
 play = track_WR_clean_df[(track_WR_clean_df["playId"] == play_id)]
 
 # Sort by frame
@@ -50,11 +53,11 @@ def update(frame):
     # Current positions
     offense = frame_data[frame_data["team"] == "home"]
     defense = frame_data[frame_data["team"] == "away"]
-    #football = frame_data[frame_data["team"] == "football"]
     
     ax.scatter(offense["x"], offense["y"], c="blue", s=50)
     ax.scatter(defense["x"], defense["y"], c="red", s=50)
-    #ax.scatter(football["x"], football["y"], c="brown", s=70)
+    ax.scatter(offense["snap_x"], offense["snap_y"], c="brown", s=30)
+    ax.scatter(defense["snap_x"], defense["snap_y"], c="brown", s=30)
     
     ax.set_xlim(0, 120)
     ax.set_ylim(0, 53.3)
