@@ -6,4 +6,4 @@
 
 4. This is an extremely important part to the set up of the project so that I can begin to create the labels for each route that the model will try to learn.
 
-5. I wrote the code.
+5. I wrote the code with help from AI to animate/plot the plays.
