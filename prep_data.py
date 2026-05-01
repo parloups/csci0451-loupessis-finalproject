@@ -107,4 +107,4 @@ X_test = torch.tensor(np.stack(X_test_list, axis = 0))
 y_train = torch.tensor(y_train_list)
 y_test = torch.tensor(y_test_list)
 
-print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+#print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
