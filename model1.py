@@ -3,76 +3,25 @@ Parker Loupessis Final Project
 1st Model
 """
 import torch
-import pandas as pd
-import numpy as np
 from matplotlib import pyplot as plt
-import matplotlib.ticker as mtick
 import torch.nn as nn
-from torch.nn import Conv2d, MaxPool2d, Parameter
-from torch.nn.functional import relu
-from torchvision import models
-import torch.optim as optim
 import torch.nn as nn
 from torch.nn import ReLU
 from torchinfo import summary
 from torch.utils.data import TensorDataset, DataLoader
-from prep_data import X_train, X_test, y_train, y_test
-
-## create validation set
-route_counts = torch.bincount(y_train)
-val_data_counts = (route_counts * 0.2).round()
-# Go routes
-idx0 = torch.where(y_train == 0)[0]
-shuff0 = idx0[torch.randperm(len(idx0))]
-trainidx0 = shuff0[int(val_data_counts[0].item()):]
-validx0 = shuff0[:int(val_data_counts[0].item())]
-
-# In routes
-idx1 = torch.where(y_train == 1)[0]
-shuff1 = idx1[torch.randperm(len(idx1))]
-trainidx1 = shuff1[int(val_data_counts[1].item()):]
-validx1 = shuff1[:int(val_data_counts[1].item())]
-
-# Out routes
-idx2 = torch.where(y_train == 2)[0]
-shuff2= idx2[torch.randperm(len(idx2))]
-trainidx2 = shuff2[int(val_data_counts[2].item()):]
-validx2 = shuff2[:int(val_data_counts[2].item())]
-
-# Curl routes
-idx3 = torch.where(y_train == 3)[0]
-shuff3 = idx3[torch.randperm(len(idx3))]
-trainidx3 = shuff3[int(val_data_counts[3].item()):]
-validx3 = shuff3[:int(val_data_counts[3].item())]
-
-# All routes
-trainidx = torch.concat([trainidx0, trainidx1, trainidx2, trainidx3])
-validx = torch.concat([validx0, validx1, validx2, validx3])
-
-# Concat 
-X_train_list = []
-X_val_list = []
-y_train_list = []
-y_val_list = []
-for i in trainidx:
-  X_train_list.append(X_train[i])
-  y_train_list.append(y_train[i].item())
-for i in validx:
-  X_val_list.append(X_train[i])
-  y_val_list.append(y_train[i].item())
-
-X_train = torch.tensor(np.stack(X_train_list, axis = 0))
-X_val = torch.tensor(np.stack(X_val_list, axis = 0))
-y_train = torch.tensor(y_train_list)
-y_val = torch.tensor(y_val_list)
-
-#print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
+from prep_data import X_train, X_val, X_test, y_train, y_val, y_test
 
 # convert to datatypes that will work for the model
 X_train = X_train.to(torch.float32)
 X_val = X_val.to(torch.float32)
+X_test = X_test.to(torch.float32)
 y_train = y_train.to(torch.long)
 y_val = y_val.to(torch.long)
+y_test = y_test.to(torch.long)
+
+# for model 1 don't consider speed or direction
+X_train = X_train[:,:,:4]
+X_val = X_val[:,:,:4]
 
 # create data loaders
 train_set = TensorDataset(X_train, y_train)
@@ -187,7 +136,7 @@ def train(model, k_epochs=1, lr = 0.001):
   return train_acc, train_loss, train_cm, val_acc, val_loss, val_cm
 
 # train
-train_acc, train_loss, train_cm, val_acc, val_loss, val_cm = train(model, k_epochs = 100, lr = 0.001)
+train_acc, train_loss, train_cm, val_acc, val_loss, val_cm = train(model, k_epochs = 200, lr = 0.001)
 
 # plot loss and accuracy over training
 fig, axarr = plt.subplots(1, 2, figsize = (8, 3.5))
