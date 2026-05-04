@@ -23,7 +23,7 @@ tracking_play_players = tracking_play.merge(players, on="nflId", how ="left")
 track_WR = tracking_play_players[tracking_play_players["PositionAbbr"] == "WR"]
 
 # remove unneeded columns
-track_WR = track_WR.drop(columns=["time", "dis", "gameId_y", "offenseFormation", "personnel.offense", "defendersInTheBox",
+track_WR = track_WR.drop(columns=["time", "gameId_y", "offenseFormation", "personnel.offense", "defendersInTheBox",
                                   "numberOfPassRushers", "personnel.defense", "HomeScoreBeforePlay", "VisitorScoreBeforePlay",
                                   "HomeScoreAfterPlay", "VisitorScoreAfterPlay", "isPenalty", "SpecialTeamsPlayType", "KickReturnYardage",
                                   "EntryYear", "DraftRound", "DraftNumber","Height", "Weight", "College", "FirstName", "LastName"])
