@@ -22,35 +22,33 @@ for _, player in wr_labels.groupby(["playId", "nflId"]):
 # pad routes to all have same number of frames 
 max_frames = wr_labels["frame.id"].max()
 padded_sequences = []
+orig_lengths = []
 
 for _, player_route_df in wr_labels.groupby(["playId", "nflId"]):
-  snap_x = player_route_df["snap_x"]
-  snap_y = player_route_df["snap_y"]
-  
-  orig_x = player_route_df["x"].iloc[0]
-  orig_y = player_route_df["y"].iloc[0]
+  snap_x = player_route_df["snap_x"].iloc[0]
+  snap_y = player_route_df["snap_y"].iloc[0]
+  snap_x_seq = np.full(max_frames, snap_x)
+  snap_y_seq = np.full(max_frames, snap_y)
 
   current_x_values = player_route_df["x"].values
   current_y_values = player_route_df["y"].values
 
   current_len = len(player_route_df)
+  orig_lengths.append(current_len)
 
   if current_len < max_frames:
     pad_len = max_frames - current_len
-    padded_x = np.pad(current_x_values, (pad_len, 0), "constant", constant_values=(orig_x))
-    padded_y = np.pad(current_y_values, (pad_len, 0), "constant", constant_values=(orig_y))
-    padded_snap_x = np.pad(snap_x, (pad_len, 0), "constant", constant_values=(snap_x.iloc[0]))
-    padded_snap_y = np.pad(snap_y, (pad_len, 0), "constant", constant_values=(snap_y.iloc[0]))
+    padded_x = np.pad(current_x_values, (0,pad_len), "constant", constant_values=0)
+    padded_y = np.pad(current_y_values, (0, pad_len), "constant", constant_values=0)
   else:
     padded_x = current_x_values
     padded_y = current_y_values
-    padded_snap_x = snap_x
-    padded_snap_y = snap_y
 
-  combined_sequence = np.stack([padded_x, padded_y, padded_snap_x, padded_snap_y], axis = 1)
+  combined_sequence = np.stack([padded_x, padded_y, snap_x_seq, snap_y_seq], axis = 1)
   padded_sequences.append(combined_sequence)
 
 all_padded_routes = np.array(padded_sequences)
+lengths = torch.tensor(orig_lengths)
 
 ## create feature and target vectors
 X = all_padded_routes
