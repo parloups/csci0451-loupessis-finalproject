@@ -9,7 +9,7 @@ import pandas as pd
 track_WR_clean_df = pd.read_csv("track_WR_clean.csv")
 
 # Pick a play
-play_id = track_WR_clean_df["playId"].unique()[60] # change number to change play
+play_id = track_WR_clean_df["playId"].unique()[71] # change number to change play
 play = track_WR_clean_df[(track_WR_clean_df["playId"] == play_id)]
 
 # Sort by frame
