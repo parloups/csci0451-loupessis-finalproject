@@ -38,6 +38,7 @@ for _, player_route_df in full_labels_df.groupby(["playId", "nflId"]):
   current_x_values = player_route_df["x"].values
   current_y_values = player_route_df["y"].values
   current_s_values = player_route_df["s"].values
+  current_dis_values = player_route_df["dis"].values
   current_dir_values = player_route_df["dir"].values
 
   current_len = len(player_route_df)
@@ -48,14 +49,16 @@ for _, player_route_df in full_labels_df.groupby(["playId", "nflId"]):
     padded_x = np.pad(current_x_values, (0, pad_len), "constant", constant_values=0)
     padded_y = np.pad(current_y_values, (0, pad_len), "constant", constant_values=0)
     padded_s = np.pad(current_s_values, (0, pad_len), "constant", constant_values=0)
+    padded_dis = np.pad(current_dis_values, (0, pad_len), "constant", constant_values=0)
     padded_dir = np.pad(current_dir_values, (0, pad_len), "constant", constant_values=0)
   else:
     padded_x = current_x_values
     padded_y = current_y_values
     padded_s = current_s_values
+    padded_dis = current_dis_values
     padded_dir = current_dir_values
 
-  combined_sequence = np.stack([padded_x, padded_y, snap_x_seq, snap_y_seq, padded_s, padded_dir, len_seq], axis = 1)
+  combined_sequence = np.stack([padded_x, padded_y, snap_x_seq, snap_y_seq, padded_s, padded_dis, padded_dir, len_seq], axis = 1)
   padded_sequences.append(combined_sequence)
 
 all_padded_routes = np.array(padded_sequences)
@@ -166,4 +169,4 @@ X_val = torch.tensor(np.stack(X_val_list, axis = 0))
 y_train = torch.tensor(y_train_list)
 y_val = torch.tensor(y_val_list)
 
-#print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
+print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
