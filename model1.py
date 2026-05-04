@@ -1,6 +1,6 @@
 """
 Parker Loupessis Final Project
-1st Model
+1st Model, consider only (x,y) coordinates of player and ball at snap
 """
 import torch
 from matplotlib import pyplot as plt
