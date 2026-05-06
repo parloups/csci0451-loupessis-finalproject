@@ -179,3 +179,13 @@ y_train = torch.tensor(y_train_list)
 y_val = torch.tensor(y_val_list)
 
 #print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
+
+# save tensors
+torch.save({
+    "X_train": X_train,
+    "X_val": X_val,
+    "X_test": X_test,
+    "y_train": y_train,
+    "y_val": y_val,
+    "y_test": y_test
+}, "data/tensors.pt")
