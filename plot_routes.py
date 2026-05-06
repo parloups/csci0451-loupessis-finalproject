@@ -1,6 +1,7 @@
 """
 Parker Loupessis Final Project
 Plotting/Animating the cleaned routes or entire play
+Code coppied from NFL Big Data Bowl and translated to python
 """
 import numpy as np
 import pandas as pd
