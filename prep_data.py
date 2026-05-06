@@ -27,7 +27,6 @@ for _, player in full_labels_df.groupby(["playId", "nflId"]):
 # pad routes to all have same number of frames 
 max_frames = full_labels_df["frame.id"].max()
 padded_sequences = []
-orig_lengths = []
 
 for _, player_route_df in full_labels_df.groupby(["playId", "nflId"]):
   snap_x = player_route_df["snap_x"].iloc[0]
@@ -41,6 +40,10 @@ for _, player_route_df in full_labels_df.groupby(["playId", "nflId"]):
   current_dis_values = player_route_df["dis"].values
   current_dir_values = player_route_df["dir"].values
 
+  direction_rad = current_dir_values * (np.pi / 180)
+  dir_sin = np.sin(direction_rad)
+  dir_cos = np.cos(direction_rad)  
+
   current_len = len(player_route_df)
   len_seq = np.full(max_frames, current_len)
 
@@ -50,15 +53,21 @@ for _, player_route_df in full_labels_df.groupby(["playId", "nflId"]):
     padded_y = np.pad(current_y_values, (0, pad_len), "constant", constant_values=0)
     padded_s = np.pad(current_s_values, (0, pad_len), "constant", constant_values=0)
     padded_dis = np.pad(current_dis_values, (0, pad_len), "constant", constant_values=0)
-    padded_dir = np.pad(current_dir_values, (0, pad_len), "constant", constant_values=0)
+    padded_dir_sin = np.pad(dir_sin, (0, pad_len), "constant", constant_values=0)
+    padded_dir_cos = np.pad(dir_cos, (0, pad_len), "constant", constant_values=0)
   else:
     padded_x = current_x_values
     padded_y = current_y_values
     padded_s = current_s_values
     padded_dis = current_dis_values
     padded_dir = current_dir_values
+    padded_dir_sin = dir_sin
+    padded_dir_cos = dir_cos
 
-  combined_sequence = np.stack([padded_x, padded_y, snap_x_seq, snap_y_seq, padded_s, padded_dis, padded_dir, len_seq], axis = 1)
+  relative_x = padded_x - snap_x_seq
+  relative_y = padded_y - snap_y_seq
+
+  combined_sequence = np.stack([padded_x, padded_y, snap_x_seq, snap_y_seq, relative_x, relative_y, padded_s, padded_dir_sin, padded_dir_cos, padded_dis, len_seq], axis = 1)
   padded_sequences.append(combined_sequence)
 
 all_padded_routes = np.array(padded_sequences)
@@ -169,4 +178,4 @@ X_val = torch.tensor(np.stack(X_val_list, axis = 0))
 y_train = torch.tensor(y_train_list)
 y_val = torch.tensor(y_val_list)
 
-print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
+#print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
