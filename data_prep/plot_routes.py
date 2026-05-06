@@ -1,7 +1,7 @@
 """
 Parker Loupessis Final Project
 Plotting/Animating the cleaned routes or entire play
-Code coppied from NFL Big Data Bowl and translated to python
+Code coppied from NFL Big Data Bowl and translated to python with help of AI
 """
 import numpy as np
 import pandas as pd
@@ -12,12 +12,14 @@ from matplotlib.lines import Line2D
 from collections import defaultdict, deque
 
 ## plot WR only
-track_WR_clean_df = pd.read_csv("track_WR_clean.csv")
+url1 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/track_WR_clean.csv"
+track_WR_clean_df = pd.read_csv(url1)
 play_id = track_WR_clean_df["playId"].unique()[24]
 example_play = track_WR_clean_df[(track_WR_clean_df["playId"] == play_id)]
 
 ## plot entire play
-# tracking = pd.read_csv("tracking_gameId_2017090700.csv")
+# url2 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/tracking_gameId_2017090700.csv"
+# tracking = pd.read_csv(url2)
 # game_id = tracking.iloc[20]["gameId"]
 # play_id = 1840
 # example_play = tracking[(tracking["gameId"] == game_id) &

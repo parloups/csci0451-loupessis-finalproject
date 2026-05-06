@@ -5,10 +5,17 @@ Cleaning data so labels can be added
 
 # load data
 import pandas as pd
-games = pd.read_csv('games.csv')
-plays = pd.read_csv('plays.csv')
-players = pd.read_csv('players.csv')
-tracking = pd.read_csv('tracking_gameId_2017090700.csv')
+url = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/games.csv"
+games = df = pd.read_csv(url)
+
+url2 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/players.csv"
+players = pd.read_csv(url2)
+
+url3 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/plays.csv"
+plays = pd.read_csv(url3)
+
+url4 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/tracking_gameId_2017090700.csv"
+tracking = pd.read_csv(url4)
 
 # take only plays from game with tracking data
 plays_2017090700 = plays[plays["gameId"] == 2017090700]
