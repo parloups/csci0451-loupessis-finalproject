@@ -129,63 +129,10 @@ y_test = torch.tensor(y_test_list)
 
 # print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-torch.manual_seed(50426)
-## create validation set
-route_counts = torch.bincount(y_train)
-val_data_counts = (route_counts * 0.2).round()
-# Go routes
-idx0 = torch.where(y_train == 0)[0]
-shuff0 = idx0[torch.randperm(len(idx0))]
-trainidx0 = shuff0[int(val_data_counts[0].item()):]
-validx0 = shuff0[:int(val_data_counts[0].item())]
-
-# In routes
-idx1 = torch.where(y_train == 1)[0]
-shuff1 = idx1[torch.randperm(len(idx1))]
-trainidx1 = shuff1[int(val_data_counts[1].item()):]
-validx1 = shuff1[:int(val_data_counts[1].item())]
-
-# Out routes
-idx2 = torch.where(y_train == 2)[0]
-shuff2= idx2[torch.randperm(len(idx2))]
-trainidx2 = shuff2[int(val_data_counts[2].item()):]
-validx2 = shuff2[:int(val_data_counts[2].item())]
-
-# Curl routes
-idx3 = torch.where(y_train == 3)[0]
-shuff3 = idx3[torch.randperm(len(idx3))]
-trainidx3 = shuff3[int(val_data_counts[3].item()):]
-validx3 = shuff3[:int(val_data_counts[3].item())]
-
-# All routes
-trainidx = torch.concat([trainidx0, trainidx1, trainidx2, trainidx3])
-validx = torch.concat([validx0, validx1, validx2, validx3])
-
-# Concat 
-X_train_list = []
-X_val_list = []
-y_train_list = []
-y_val_list = []
-for i in trainidx:
-  X_train_list.append(X_train[i])
-  y_train_list.append(y_train[i].item())
-for i in validx:
-  X_val_list.append(X_train[i])
-  y_val_list.append(y_train[i].item())
-
-X_train = torch.tensor(np.stack(X_train_list, axis = 0))
-X_val = torch.tensor(np.stack(X_val_list, axis = 0))
-y_train = torch.tensor(y_train_list)
-y_val = torch.tensor(y_val_list)
-
-#print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)
-
 # save tensors
 torch.save({
     "X_train": X_train,
-    "X_val": X_val,
     "X_test": X_test,
     "y_train": y_train,
-    "y_val": y_val,
     "y_test": y_test
 }, "data/tensors.pt")
