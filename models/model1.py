@@ -9,29 +9,38 @@ import torch.nn as nn
 from torch.nn import ReLU
 from torchinfo import summary
 from torch.utils.data import TensorDataset, DataLoader
+from sklearn.model_selection import train_test_split
 
 # load tensors
 data = torch.load("data/tensors.pt")
-X_train = data["X_train"]
-X_val = data["X_val"]
+X_train_val = data["X_train"]
 X_test = data["X_test"]
-y_train = data["y_train"]
-y_val = data["y_val"]
+y_train_val = data["y_train"]
 y_test = data["y_test"]
 
 # convert to datatypes that will work for the model
-X_train = X_train.to(torch.float32)
-X_val = X_val.to(torch.float32)
+X_train_val = X_train_val.to(torch.float32)
 X_test = X_test.to(torch.float32)
-y_train = y_train.to(torch.long)
-y_val = y_val.to(torch.long)
+y_train_val = y_train_val.to(torch.long)
 y_test = y_test.to(torch.long)
 
 # for model 1 don't consider speed or direction
-X_train = X_train[:,:,:4]
-X_val = X_val[:,:,:4]
+X_train_val = X_train_val[:,:,:4]
+X_test = X_test[:,:,:4]
+
+# create validation split
+train_idx, val_idx = train_test_split(
+   range(len(y_train_val)),
+   test_size = 0.2,
+   stratify = y_train_val,
+   random_state=51226
+)
+X_train, y_train = X_train_val[train_idx], y_train_val[train_idx]
+X_val, y_val = X_train_val[val_idx], y_train_val[val_idx]
 
 # create data loaders
+full_train_set = TensorDataset(X_train_val, y_train_val)
+full_train_loader = DataLoader(full_train_set, batch_size=8, shuffle=True)
 train_set = TensorDataset(X_train, y_train)
 train_loader = DataLoader(train_set, batch_size=8, shuffle=True)
 val_set = TensorDataset(X_val, y_val)
@@ -115,14 +124,14 @@ def plot_confusion_mat(conf_mat, ax, title = "Confusion Matrix"):
     ax.grid(False)
 
 # function to train the model 
-def train(model, k_epochs=1, lr = 0.001):
+def train(model, train_loader, test_loader, k_epochs=1, lr = 0.001):
   loss_fn = nn.CrossEntropyLoss()
   optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
   train_acc = []
-  val_acc = []
+  test_acc = []
   train_loss = []
-  val_loss = []
+  test_loss = []
 
   for epoch in range(k_epochs):
     for i, data in enumerate(train_loader):
@@ -134,17 +143,18 @@ def train(model, k_epochs=1, lr = 0.001):
       optimizer.step()
 
     train_a, train_l, train_cm = evaluate(model, data_loader=train_loader)
-    val_a, val_l, val_cm = evaluate(model, data_loader=val_loader)
+    test_a, test_l, test_cm = evaluate(model, data_loader=test_loader)
 
     train_acc.append(train_a)
-    val_acc.append(val_a)
+    test_acc.append(test_a)
     train_loss.append(train_l)
-    val_loss.append(val_l)
+    test_loss.append(test_l)
 
-  return train_acc, train_loss, train_cm, val_acc, val_loss, val_cm
+  return train_acc, train_loss, train_cm, test_acc, test_loss, test_cm
 
+## train on val data
 # train
-train_acc, train_loss, train_cm, val_acc, val_loss, val_cm = train(model, k_epochs = 200, lr = 0.001)
+train_acc, train_loss, train_cm, val_acc, val_loss, val_cm = train(model, train_loader, val_loader, k_epochs = 200, lr = 0.001)
 
 # plot loss and accuracy over training
 fig, axarr = plt.subplots(1, 2, figsize = (8, 3.5))
@@ -173,4 +183,30 @@ ax = axarr[0]
 plot_confusion_mat(train_cm, ax, title = f"Training Confusion Matrix (acc = {train_acc[-1]:.2%})")
 ax = axarr[1]
 plot_confusion_mat(val_cm, ax, title = f"Validation Confusion Matrix (acc = {val_acc[-1]:.2%})")
+
+## train on test data
+# train
+final_model = RouteClassifier()
+loss_fn = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(final_model.parameters(), lr=0.001)
+k_epochs = 200
+for epoch in range(k_epochs):
+  for i, data in enumerate(full_train_loader):
+    X, y = data
+    optimizer.zero_grad()
+    y_pred = final_model(X)
+    loss = loss_fn(y_pred, y)
+    loss.backward()
+    optimizer.step()
+
+# evaluate final model
+train_acc, train_loss, train_cm = evaluate(model, data_loader=full_train_loader)
+test_acc, test_loss, test_cm = evaluate(final_model, data_loader=test_loader)
+
+# plot confusion matrix of testing data
+fig, axarr = plt.subplots(1, 2, figsize = (14, 7))
+ax = axarr[0]
+plot_confusion_mat(train_cm, ax, title = f"Full Training Confusion Matrix (acc = {train_acc:.2%})")
+ax = axarr[1]
+plot_confusion_mat(test_cm, ax, title = f"Testing Confusion Matrix (acc = {test_acc:.2%})")
 plt.show()
