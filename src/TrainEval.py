@@ -61,7 +61,8 @@ class TrainEval:
     ax.set_title(title)
     ax.grid(False)
 
-  def train(self, X, y, augmentation_count=0, k_epochs=1, lr = 0.001):
+  def train(self, X, y, augmentation_count=0, k_epochs=1, lr=0.001, random_state=1):
+    torch.manual_seed(random_state)
     augmenter = Route_Augmentation(augmentation_count)
     X_train_aug, y_train_aug = augmenter.augment(X, y)
     X_train_aug = X_train_aug.to(torch.float32)
@@ -89,7 +90,8 @@ class TrainEval:
 
     return train_acc, train_loss, train_cm
 
-  def cv_train(self, model_type, X, y, augmentation_count=0, k_epochs=1, lr = 0.001, patience=200, folds=5, random_state=1):
+  def cv_train(self, model_type, X, y, augmentation_count=0, k_epochs=1, lr=0.001, patience=100, folds=5, random_state=1):
+    torch.manual_seed(random_state)
     cv_train_acc, cv_train_loss, cv_train_cm = [], [], []
     cv_val_acc, cv_val_loss, cv_val_cm = [], [], []
 
