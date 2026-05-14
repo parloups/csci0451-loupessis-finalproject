@@ -9,6 +9,9 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import copy
 from sklearn.model_selection import StratifiedKFold
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.RouteAug import Route_Augmentation
 
 class TrainEval:
