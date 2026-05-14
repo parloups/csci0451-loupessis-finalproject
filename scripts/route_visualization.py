@@ -6,9 +6,7 @@ Code coppied from NFL Big Data Bowl and translated to python with help of AI
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.animation import FuncAnimation
-from matplotlib.lines import Line2D
 from collections import defaultdict, deque
 
 ## plot WR only

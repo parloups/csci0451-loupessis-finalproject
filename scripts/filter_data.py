@@ -1,6 +1,6 @@
 """
 Parker Loupessis Final Project
-Cleaning data so labels can be added
+Filtering data for all that is needed for the model
 """
 
 # load data
