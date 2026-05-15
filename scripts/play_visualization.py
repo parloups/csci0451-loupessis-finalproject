@@ -9,11 +9,13 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from collections import defaultdict, deque
 
-## plot WR only
-url1 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/track_WR_clean.csv"
-track_WR_clean_df = pd.read_csv(url1)
-play_id = track_WR_clean_df["playId"].unique()[24]
-example_play = track_WR_clean_df[(track_WR_clean_df["playId"] == play_id)]
+# plot entire play
+url2 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/tracking_gameId_2017090700.csv"
+tracking = pd.read_csv(url2)
+game_id = tracking.iloc[20]["gameId"]
+play_id = 1840
+example_play = tracking[(tracking["gameId"] == game_id) &
+                (tracking["playId"] == play_id)]
 
 xmin = 0
 xmax = 160 / 3
