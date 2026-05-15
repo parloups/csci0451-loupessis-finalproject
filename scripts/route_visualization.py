@@ -1,6 +1,6 @@
 """
 Parker Loupessis Final Project
-Plotting/Animating the cleaned routes or entire play
+Plotting/Animating the cleaned routes
 Code coppied from NFL Big Data Bowl and translated to python with help of AI
 """
 import numpy as np
@@ -119,4 +119,3 @@ def update(frame_id):
 anim = FuncAnimation(fig, update, frames=frames, interval=100, blit=False)
 plt.tight_layout()
 plt.show()
-
