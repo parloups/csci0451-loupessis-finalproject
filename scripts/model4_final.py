@@ -1,6 +1,6 @@
 """
 Parker Loupessis Final Project
-Train and save model3 for testing data
+Train and save model4 for testing data
 """
 import torch
 from torch.utils.data import TensorDataset, DataLoader
@@ -8,10 +8,10 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.TrainEval import TrainEval
-from src.RouteClassifier3 import RouteClassifier3
+from src.RouteClassifier4 import RouteClassifier4
 
 # load tensors
-data = torch.load("data/tensors.pt")
+data = torch.load("data/tensors2.pt")
 X_train = data["X_train"]
 X_test = data["X_test"]
 y_train = data["y_train"]
@@ -24,18 +24,18 @@ y_train = y_train.to(torch.long)
 y_test = y_test.to(torch.long)
 
 # instantiate model
-model = RouteClassifier3()
-TrainEval = TrainEval(model, second_labels=False)
+model = RouteClassifier4()
+TrainEval = TrainEval(model, second_labels=True)
 
 # train model
 train_acc, train_loss, train_cm = TrainEval.train(X_train, y_train,
-                                                  augmentation_count=50,
-                                                  k_epochs=125,
+                                                  augmentation_count=20,
+                                                  k_epochs=400,
                                                   lr=0.001,
                                                   random_state=512)
 
 # save the model
-torch.save(model.state_dict(), "models/model3.pt")
+torch.save(model.state_dict(), "models/model4.pt")
 
 # evaluate on test data
 model.eval()
