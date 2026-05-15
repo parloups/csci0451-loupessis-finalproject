@@ -4,14 +4,14 @@ Route Classifier class for the second model
   Uses (x, y) coordinates relative to the snap of WR
   Encodes (x, y) coordinates of the snap seperately
   Uses speed, direction, and distance traveled
-  Uses augmented data for training
+  Uses randomly augmented data for training
   Ignores padding
 """
 import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
-class RouteClassifier(nn.Module):
+class RouteClassifier3(nn.Module):
   def __init__(self, input_size=6, snap_size=2, hidden_size=64, num_layers=2, num_classes=4, dropout=0.3):
     super().__init__()
 
