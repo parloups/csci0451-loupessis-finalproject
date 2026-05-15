@@ -15,7 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.RouteAug import Route_Augmentation
 
 class TrainEval:
-  def __init__(self, model, second_labels):
+  def __init__(self, model, second_labels=False):
     self.model = model
     self.second_labels = second_labels
 
