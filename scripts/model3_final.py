@@ -1,6 +1,6 @@
 """
 Parker Loupessis Final Project
-Train and save model2 for testing data
+Train and save model3 for testing data
 """
 import torch
 from torch.utils.data import TensorDataset, DataLoader
@@ -8,7 +8,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.TrainEval import TrainEval
-from src.RouteClassifier2 import RouteClassifier2
+from src.RouteClassifier3 import RouteClassifier3
 
 # load tensors
 data = torch.load("data/tensors.pt")
@@ -24,21 +24,22 @@ y_train = y_train.to(torch.long)
 y_test = y_test.to(torch.long)
 
 # instantiate model
-model = RouteClassifier2()
+model = RouteClassifier3()
 TrainEval = TrainEval(model, second_labels=False)
 
 # train model
 train_acc, train_loss, train_cm = TrainEval.train(X_train, y_train,
-                                                  augmentation_count=0,
+                                                  augmentation_count=50,
                                                   k_epochs=125,
                                                   lr=0.001,
                                                   random_state=512)
 
 # save the model
-torch.save(model.state_dict(), "models/model2.pt")
+torch.save(model.state_dict(), "models/model3.pt")
 
 # evaluate on test data
 model.eval()
 test_set = TensorDataset(X_test, y_test)
 test_loader = DataLoader(test_set, batch_size=8, shuffle=False)
 test_acc, test_loss, test_cm = TrainEval.evaluate(model, test_loader)
+print(test_acc)

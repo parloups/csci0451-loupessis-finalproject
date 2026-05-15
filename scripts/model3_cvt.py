@@ -1,13 +1,13 @@
 """
 Parker Loupessis Final Project
-Train model2 using cross-validation
+Train model3 using cross-validation
 """
 import torch
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.TrainEval import TrainEval
-from src.RouteClassifier2 import RouteClassifier2
+from src.RouteClassifier3 import RouteClassifier3
 
 # load tensors
 data = torch.load("data/tensors.pt")
@@ -19,14 +19,14 @@ X_train = X_train.to(torch.float32)
 y_train = y_train.to(torch.long)
 
 # instantiate model
-model = RouteClassifier2()
+model = RouteClassifier3()
 TrainEval = TrainEval(model, second_labels=False)
 # run cross validation
-train_acc, train_loss, train_cm, val_acc, val_loss, val_cm = TrainEval.cv_train(RouteClassifier2, X_train, y_train,
-                                                                              augmentation_count=0,
+train_acc, train_loss, train_cm, val_acc, val_loss, val_cm = TrainEval.cv_train(RouteClassifier3, X_train, y_train,
+                                                                              augmentation_count=50,
                                                                               k_epochs=1000,
                                                                               lr=0.001,
-                                                                              patience=100,
+                                                                              patience=200,
                                                                               folds=5,
                                                                               random_state=514
                                                                               )
@@ -39,4 +39,4 @@ torch.save({
     "val_acc":    val_acc,
     "val_loss":   val_loss,
     "val_cm":     val_cm
-}, "models/model2_cv_results.pt")
+}, "models/model3_cv_results.pt")

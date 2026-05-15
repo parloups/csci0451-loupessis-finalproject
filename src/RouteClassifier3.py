@@ -1,6 +1,6 @@
 """
 Parker Loupessis Final Project
-Route Classifier class for the second model
+Route Classifier class for the third model
   Uses (x, y) coordinates relative to the snap of WR
   Encodes (x, y) coordinates of the snap seperately
   Uses speed, direction, and distance traveled
