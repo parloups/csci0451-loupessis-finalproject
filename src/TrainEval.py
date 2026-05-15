@@ -76,6 +76,8 @@ class TrainEval:
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
 
+    best_l = float("inf")
+    best_weights = None
     train_acc = []
     train_loss = []
     for epoch in range(k_epochs):
@@ -91,6 +93,14 @@ class TrainEval:
       train_acc.append(train_a)
       train_loss.append(train_l)
 
+      if train_l < best_l:
+        best_l = train_l
+        best_weights = copy.deepcopy(self.model.state_dict())
+
+    if train_l > best_l:
+      self.model.load_state_dict(best_weights)
+      _, _, train_cm = self.evaluate(self.model, data_loader=train_loader)
+    
     return train_acc, train_loss, train_cm
 
   def cv_train(self, model_type, X, y, augmentation_count=0, k_epochs=1, lr=0.001, patience=100, folds=5, random_state=1):
