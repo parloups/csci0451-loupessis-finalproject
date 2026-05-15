@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from collections import defaultdict, deque
 
-# plot entire play
+## plot full play
 url2 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/tracking_gameId_2017090700.csv"
 tracking = pd.read_csv(url2)
 game_id = tracking.iloc[20]["gameId"]
@@ -120,4 +120,5 @@ def update(frame_id):
 
 anim = FuncAnimation(fig, update, frames=frames, interval=100, blit=False)
 plt.tight_layout()
+anim.save("full_play.mp4", writer="ffmpeg", fps=10)
 plt.show()

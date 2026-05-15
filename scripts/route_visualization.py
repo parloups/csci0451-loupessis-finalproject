@@ -118,4 +118,5 @@ def update(frame_id):
 
 anim = FuncAnimation(fig, update, frames=frames, interval=100, blit=False)
 plt.tight_layout()
+anim.save("wr_only.mp4", writer="ffmpeg", fps=10)
 plt.show()
