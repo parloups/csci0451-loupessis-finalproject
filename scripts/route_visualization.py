@@ -9,12 +9,13 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from collections import defaultdict, deque
 
-## plot WR only
+# ── Data Loading ──────────────────────────────────────────────────────────────
 url1 = "https://raw.githubusercontent.com/parloups/csci0451-loupessis-finalproject/refs/heads/main/data/track_WR_clean.csv"
 track_WR_clean_df = pd.read_csv(url1)
 play_id = track_WR_clean_df["playId"].unique()[24]
 example_play = track_WR_clean_df[(track_WR_clean_df["playId"] == play_id)]
 
+# ── Field Dimensions ──────────────────────────────────────────────────────────
 xmin = 0
 xmax = 160 / 3
 hash_right = 38.35
@@ -23,6 +24,7 @@ hash_width = 3.3
 ymin = 0
 ymax = 120
 
+# ── Hash Marks ────────────────────────────────────────────────────────────────
 df_hash = pd.DataFrame(
     [(x, y)
      for x in [0, 23.36667, 29.96667, xmax]
@@ -32,18 +34,21 @@ df_hash = pd.DataFrame(
 df_hash = df_hash[df_hash["y"] % 5 != 0]
 df_hash = df_hash[(df_hash["y"] < ymax) & (df_hash["y"] > ymin)]
 
+# ── Team Colors ───────────────────────────────────────────────────────────────
 team_styles = {
     "home":     ("o", "#e31837", "black",   100),
     "football": ("o", "#654321", "#654321",  64),
     "away":     ("o", "#002244", "#c60c30", 100),
 }
 
+# ── Figure Setup ──────────────────────────────────────────────────────────────
 fig, ax = plt.subplots(figsize=(16, 6))
 ax.set_xlim(ymin, ymax)
 ax.set_ylim(xmin, xmax)
 ax.set_aspect("equal")
 ax.axis("off")
 
+# ── Field Markings ────────────────────────────────────────────────────────────
 left_hashes  = df_hash[df_hash["x"] < 55 / 2]
 right_hashes = df_hash[df_hash["x"] > 55 / 2]
 ax.plot(left_hashes["y"],  left_hashes["x"],  "|", color="white", markersize=4, markeredgewidth=1.5)
@@ -65,10 +70,11 @@ ax.plot(boundary_x, boundary_y, color="white", linewidth=2)
 ax.set_facecolor("#336633")
 fig.patch.set_facecolor("#336633")
 
+# ── Animation Artists ─────────────────────────────────────────────────────────
 frames = sorted(example_play["frame.id"].unique())
 max_players = len(example_play["nflId"].unique())
 
-TRAIL_LENGTH = 0
+TRAIL_LENGTH = 0 # set > 0 to show movement trails behind players
 
 position_history = defaultdict(lambda: deque(maxlen=TRAIL_LENGTH))
 
@@ -84,7 +90,12 @@ for _ in range(max_players):
     text_artists.append(tx)
     trail_artists.append(line)
 
+# ── Update Function ───────────────────────────────────────────────────────────
 def update(frame_id):
+    """
+    Updates all player positions, jersey numbers, and trails for a single frame.
+    Called by FuncAnimation for each frame in the play.
+    """
     frame_data = example_play[example_play["frame.id"] == frame_id]
     for idx, (_, row) in enumerate(frame_data.iterrows()):
         style = team_styles.get(row["team"], team_styles["away"])
@@ -116,6 +127,7 @@ def update(frame_id):
 
     return scatter_artists + text_artists + trail_artists
 
+# ── Run Animation ─────────────────────────────────────────────────────────────
 anim = FuncAnimation(fig, update, frames=frames, interval=100, blit=False)
 plt.tight_layout()
 anim.save("wr_only.mp4", writer="ffmpeg", fps=10)

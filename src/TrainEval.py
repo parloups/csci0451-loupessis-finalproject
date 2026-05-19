@@ -16,13 +16,35 @@ from src.RouteAug import Route_Augmentation
 
 class TrainEval:
   def __init__(self, model, second_labels=False):
+    """
+        Args:
+            model:         instantiated RouteClassifier model to train and evaluate
+            second_labels: if True, use 15 route classes instead of 4
+      """
     self.model = model
     self.second_labels = second_labels
 
+  # code from class notes
   def evaluate(self, model, data_loader):
+    """
+        Evaluates model performance on a given dataset.
+
+        Args:
+            model:       model to evaluate
+            data_loader: DataLoader for the dataset to evaluate on
+
+        Returns:
+            acc:      overall classification accuracy
+            loss:     total cross entropy loss across all batches
+            conf_mat: confusion matrix of shape (num_classes, num_classes)
+                      where conf_mat[i, j] is the number of samples with
+                      true label i predicted as label j
+      """
     if self.second_labels:
+      # if second labels initalize as 15x15
       conf_mat = torch.zeros((15, 15), dtype = torch.int32)
     else:
+      # if first labels initalize as 4x4
       conf_mat = torch.zeros((4, 4), dtype = torch.int32)
 
     loss_fn = nn.CrossEntropyLoss()
@@ -39,7 +61,16 @@ class TrainEval:
 
     return acc, loss, conf_mat
 
+  # code from class notes
   def plot_confusion_mat(self, conf_mat, ax, title = "Confusion Matrix"):
+    """
+        Plots a confusion matrix as a heatmap with class labels and count annotations.
+
+        Args:
+            conf_mat: confusion matrix tensor of shape (num_classes, num_classes)
+            ax:       matplotlib axes to plot on
+            title:    plot title
+      """
     if self.second_labels:
       LABELS = ['Post', 'Go', 'Wheel', 'Dig', 'Curl', 'Drag', 'Speed Out', 'Slot Fade', 'Slide', 'Slant', 'Crosser', 'Hitch', 
           'Whip', 'Out', 'Corner']
@@ -64,8 +95,30 @@ class TrainEval:
     ax.set_title(title)
     ax.grid(False)
 
+  # code similar from class notes
   def train(self, X, y, augmentation_count=0, k_epochs=1, lr=0.001, random_state=1):
+    """
+        Trains the model on all provided data for a fixed number of epochs.
+        Used for final model training after hyperparameters are selected via CV.
+        Saves the weights that achieved the lowest training loss as a safeguard
+        against loss spikes near the end of training.
+
+        Args:
+            X:                 input tensor of shape (num_samples, max_frames, 11)
+            y:                 label tensor of shape (num_samples,)
+            augmentation_count: target count per class for augmentation (0 = no augmentation)
+            k_epochs:          number of epochs to train for
+            lr:                learning rate for Adam optimizer
+            random_state:      seed for reproducibility
+
+        Returns:
+            train_acc:  list of training accuracy per epoch
+            train_loss: list of training loss per epoch
+            train_cm:   confusion matrix from final evaluation
+      """
     torch.manual_seed(random_state)
+
+    # augment training data to address class imbalance if target count provided
     augmenter = Route_Augmentation(augmentation_count)
     X_train_aug, y_train_aug = augmenter.augment(X, y)
     X_train_aug = X_train_aug.to(torch.float32)
@@ -93,10 +146,12 @@ class TrainEval:
       train_acc.append(train_a)
       train_loss.append(train_l)
 
+      # save weights whenever training loss improves
       if train_l < best_l:
         best_l = train_l
         best_weights = copy.deepcopy(self.model.state_dict())
 
+    # restore best weights if final epoch was not the best
     if train_l > best_l:
       self.model.load_state_dict(best_weights)
       _, _, train_cm = self.evaluate(self.model, data_loader=train_loader)
@@ -104,15 +159,46 @@ class TrainEval:
     return train_acc, train_loss, train_cm
 
   def cv_train(self, model_type, X, y, augmentation_count=0, k_epochs=1, lr=0.001, patience=100, folds=5, random_state=1):
+    """
+        Trains and evaluates the model using stratified k-fold cross validation.
+        Used for hyperparameter selection and honest performance estimation.
+
+        Each fold:
+            - Splits data into train/val maintaining class proportions (stratified)
+            - Augments training data only — validation data is never augmented
+            - Trains with early stopping based on validation accuracy
+            - Plots loss and accuracy curves and confusion matrices
+
+        Args:
+            model_type:        class (not instance) of the model to instantiate each fold
+            X:                 input tensor of shape (num_samples, max_frames, 11)
+            y:                 label tensor of shape (num_samples,)
+            augmentation_count: target count per class for augmentation (0 = no augmentation)
+            k_epochs:          maximum number of epochs per fold
+            lr:                learning rate for Adam optimizer
+            patience:          number of epochs without val accuracy improvement before stopping
+            folds:             number of CV folds
+            random_state:      seed for reproducibility of splits and weight initialization
+
+        Returns:
+            cv_train_acc:  list of final training accuracy per fold
+            cv_train_loss: list of final training loss per fold
+            cv_train_cm:   list of training confusion matrices per fold
+            cv_val_acc:    list of final validation accuracy per fold
+            cv_val_loss:   list of final validation loss per fold
+            cv_val_cm:     list of validation confusion matrices per fold
+      """
     torch.manual_seed(random_state)
     cv_train_acc, cv_train_loss, cv_train_cm = [], [], []
     cv_val_acc, cv_val_loss, cv_val_cm = [], [], []
 
+    # stratified splits ensure each fold has proportional class representation
     cv_folds = StratifiedKFold(n_splits=folds, shuffle=True, random_state=random_state)
     for fold, (train_idx, val_idx) in enumerate(cv_folds.split(X, y)):
       X_train, y_train = X[train_idx], y[train_idx]
       X_val, y_val = X[val_idx], y[val_idx]
 
+      # augment training data only
       augmenter = Route_Augmentation(augmentation_count)
       X_train_aug, y_train_aug = augmenter.augment(X_train, y_train)
       X_train_aug = X_train_aug.to(torch.float32)
@@ -127,6 +213,7 @@ class TrainEval:
       epochs_no_imporve = 0
       best_weights = None
 
+      # reinitialize model each fold to prevent weight leakage between folds
       current_model = model_type()
       loss_fn = nn.CrossEntropyLoss()
       optimizer = torch.optim.Adam(current_model.parameters(), lr=lr, weight_decay=1e-3)
@@ -153,6 +240,8 @@ class TrainEval:
         train_loss.append(train_l)
         val_loss.append(val_l)
 
+        # save best weights when val accuracy improves
+        # code suggested by AI
         if val_a > best_val_a:
           best_val_a = val_a
           epochs_no_imporve = 0
@@ -161,13 +250,15 @@ class TrainEval:
           epochs_no_imporve += 1
 
         if epochs_no_imporve > patience:
+          # restore best weights before final evaluation
+          # code suggested by AI
           current_model.load_state_dict(best_weights)
           train_a, train_l, train_cm = self.evaluate(current_model, data_loader=train_loader)
           val_a, val_l, val_cm = self.evaluate(current_model, data_loader=val_loader)
           print(f"Stopping fold {fold+1} at epoch {epoch}. Final val accuracy of {val_a:.2%}")
           break
       
-      # plot loss and accuracy over training
+      # plot loss and accuracy curves for this fold
       fig, axarr = plt.subplots(1, 2, figsize = (8, 3.5))
 
       ax = axarr[0]
@@ -187,7 +278,7 @@ class TrainEval:
       plt.tight_layout()
       l = ax.legend()
 
-      # plot confusion matrix after training
+      # plot confusion matrices for this fold
       fig, axarr = plt.subplots(1, 2, figsize = (14, 7))
       ax = axarr[0]
       self.plot_confusion_mat(train_cm, ax, title = f"Fold {fold+1} Training Confusion Matrix (acc = {train_a:.2%})")
