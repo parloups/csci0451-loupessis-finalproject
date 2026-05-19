@@ -34,3 +34,16 @@ If our project were successful and deployed, it would show that we could use ML 
 Two-week goal: have the data prepped and ready. Filter the data we plan to actually use and create all of the targets.
 
 Four-week goal: build and implement the models. Have a notebook demonstrating the use of the models.
+
+### Packages Beyond the Class
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+*   This was used to ignore the padded sequences at the end of routes
+
+from sklearn.model_selection import StratifiedKFold
+*   This was used to quicky split validation data while ensuring same proportion of labels
+
+from matplotlib.animation import FuncAnimation
+from collections import defaultdict, deque
+*   These were used to animate the plays and routes
+    *   Code was given by the Big Data Bowl in R and AI was used to translate to Python
+
